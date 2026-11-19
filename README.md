@@ -29,11 +29,61 @@ This project is an AI Phishing Detector built with Python and Streamlit. Users c
 
 The application uses:
 
-- **TF-IDF Vectorizer** to convert email text into numerical features.
-- **Logistic Regression** to classify emails as phishing or legitimate.
-- **80/20 train-test split** to evaluate the model on unseen emails.
-- The model's accuracy is calculated and displayed each time it is trained.
+The application uses:
 
+TF-IDF Vectorizer: Converts email text into numerical features that the model can process.
+
+Logistic Regression: Classifies emails as phishing or legitimate.
+
+80/20 Train-Test Split: Uses 80% of the dataset for training and 20% for evaluating performance on unseen emails.
+
+Accuracy: Measures the percentage of correct predictions.
+
+Precision: Measures how many emails predicted as phishing are actually phishing.
+
+Recall: Measures how many actual phishing emails the model correctly identifies.
+
+F1 Score: Balances precision and recall into a single metric.
+
+Data Preprocessing
+
+The original dataset contained 18,634 email records.
+
+Before training, the dataset was cleaned to remove duplicate emails and resolve one instance where identical email text had conflicting labels.
+
+After preprocessing:
+
+Total unique emails: 17,536
+
+Legitimate emails: 10,979
+
+Phishing emails: 6,557
+
+Model Performance
+
+The model was evaluated on a held-out test set containing 3,508 emails.
+
+Metric
+
+Result
+
+Accuracy
+
+97.95%
+
+Phishing Precision
+
+98.08%
+
+Phishing Recall
+
+96.44%
+
+Phishing F1 Score
+
+97.25%
+
+These results show that the model performs well on the test dataset, although it may still make mistakes when analyzing unfamiliar emails.
 ## Project Files
 
 - `app.py` – Streamlit application that accepts user input and displays AI predictions.

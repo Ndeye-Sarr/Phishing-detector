@@ -12,7 +12,13 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split # split the dataset into training and testing data 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    precision_score,
+    recall_score,
+    f1_score
+)
 
 
 # Load the dataset
@@ -20,6 +26,16 @@ df = pd.read_csv("Phishing_Email.csv")
 
 # Remove rows with missing email text or labels
 df = df.dropna(subset=["Email Text", "Email Type"])
+
+# Find email texts that have conflicting labels
+label_counts = df.groupby("Email Text")["Email Type"].nunique()
+conflicting_texts = label_counts[label_counts > 1].index
+
+print("Repeated emails with conflicting labels:", len(conflicting_texts))
+
+# Remove ambiguous emails, then remove repeated copies
+df = df[~df["Email Text"].isin(conflicting_texts)]
+df = df.drop_duplicates(subset=["Email Text"])
 
 # X contains the email text
 X = df["Email Text"]
@@ -65,9 +81,24 @@ model.fit(X_train_numbers, y_train)
 # Test the AI
 predictions = model.predict(X_test_numbers)
 
-# Calculate the accuracy
+# Calculate the metrics
 accuracy = accuracy_score(y_test, predictions)
-print("Accuracy:", accuracy)
+phishing_precision = precision_score(
+    y_test, predictions, pos_label="phishing", zero_division=0
+)
+phishing_recall = recall_score(
+    y_test, predictions, pos_label="phishing", zero_division=0
+)
+phishing_f1 = f1_score(
+    y_test, predictions, pos_label="phishing", zero_division=0
+)
+
+print(f"Accuracy: {accuracy:.2%}")
+print(f"Phishing precision: {phishing_precision:.2%}")
+print(f"Phishing recall: {phishing_recall:.2%}")
+print(f"Phishing F1 score: {phishing_f1:.2%}")
+print("\nFull report:")
+print(classification_report(y_test, predictions, zero_division=0))
 
 # Save the trained AI model
 with open("phishing_model.pkl", "wb") as file: # wb means write in binary mode
